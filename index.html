@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BreatheBetter India - Clean Air for All</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+     Navigation 
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <span class="logo-icon">🌱</span>
+                <span class="logo-text">BreatheBetter India</span>
+            </div>
+            <div class="nav-menu" id="nav-menu">
+                <a href="#hero" class="nav-link">Home</a>
+                <a href="#aqi-dashboard" class="nav-link">AQI Live</a>
+                <a href="#report" class="nav-link">Report</a>
+                <a href="#awareness" class="nav-link">Learn</a>
+                <a href="#quiz" class="nav-link">Quiz</a>
+                <a href="#action" class="nav-link">Take Action</a>
+            </div>
+            <div class="nav-controls">
+                <button class="theme-toggle" id="theme-toggle">
+                    <span class="theme-icon">🌙</span>
+                </button>
+                <button class="nav-toggle" id="nav-toggle">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+     Hero Section 
+    <section id="hero" class="hero">
+        <div class="hero-background">
+            <div class="pollution-particles"></div>
+            <div class="clean-air-particles"></div>
+        </div>
+        <div class="hero-content">
+            <div class="hero-text">
+                <h1 class="hero-title">
+                    <span class="title-line">Breathe</span>
+                    <span class="title-line highlight">Better</span>
+                    <span class="title-line">India</span>
+                </h1>
+                <p class="hero-subtitle">Join millions in the fight for clean air. Every breath matters, every action counts.</p>
+                <div class="hero-stats">
+                    <div class="stat-item">
+                        <span class="stat-number" data-target="1200000">0</span>
+                        <span class="stat-label">Lives at Risk</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number" data-target="15">0</span>
+                        <span class="stat-label">Cities in Crisis</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number" data-target="89">0</span>
+                        <span class="stat-label">Action Groups</span>
+                    </div>
+                </div>
+                <div class="hero-buttons">
+                    <button class="btn btn-primary" onclick="scrollToSection('aqi-dashboard')">Check Air Quality</button>
+                    <button class="btn btn-secondary" onclick="scrollToSection('report')">Report Pollution</button>
+                </div>
+            </div>
+            <div class="hero-visual">
+                <div class="lungs-animation">
+                    <div class="lung left-lung"></div>
+                    <div class="lung right-lung"></div>
+                    <div class="breathing-indicator"></div>
+                </div>
+            </div>
+        </div>
+        <div class="scroll-indicator">
+            <div class="scroll-arrow"></div>
+        </div>
+    </section>
+
+     AQI Dashboard 
+    <section id="aqi-dashboard" class="aqi-dashboard">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Live Air Quality Index</h2>
+                <p class="section-subtitle">Real-time air quality data across major Indian cities</p>
+            </div>
+            <div class="aqi-grid" id="aqi-grid">
+                 AQI cards will be populated by JavaScript 
+            </div>
+            <div class="aqi-chart-container">
+                <h3>24-Hour Trend</h3>
+                <div class="chart-wrapper">
+                    <canvas id="aqi-chart"></canvas>
+                </div>
+            </div>
+        </div>
+    </section>
+
+     Report Pollution 
+    <section id="report" class="report-section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Report Pollution</h2>
+                <p class="section-subtitle">Help us map pollution hotspots across India</p>
+            </div>
+            <div class="report-container">
+                <div class="report-form-container">
+                    <form class="report-form" id="report-form">
+                        <div class="form-group">
+                            <label for="pollution-type">Pollution Type</label>
+                            <select id="pollution-type" required>
+                                <option value="">Select pollution type</option>
+                                <option value="air">Air Pollution</option>
+                                <option value="noise">Noise Pollution</option>
+                                <option value="smog">Heavy Smog</option>
+                                <option value="dust">Dust Storm</option>
+                                <option value="industrial">Industrial Emissions</option>
+                                <option value="vehicle">Vehicle Emissions</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="location">Location</label>
+                            <input type="text" id="location" placeholder="Enter your location" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="severity">Severity Level</label>
+                            <div class="severity-slider">
+                                <input type="range" id="severity" min="1" max="5" value="3">
+                                <div class="severity-labels">
+                                    <span>Mild</span>
+                                    <span>Moderate</span>
+                                    <span>Severe</span>
+                                    <span>Hazardous</span>
+                                    <span>Emergency</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="description">Description</label>
+                            <textarea id="description" placeholder="Describe what you're experiencing..." rows="4"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="photo">Upload Photo</label>
+                            <div class="file-upload">
+                                <input type="file" id="photo" accept="image/*">
+                                <div class="file-upload-display">
+                                    <span class="upload-icon">📷</span>
+                                    <span class="upload-text">Click to upload photo</span>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-full">Submit Report</button>
+                    </form>
+                </div>
+                <div class="report-map">
+                    <div class="map-placeholder">
+                        <h4>Pollution Reports Map</h4>
+                        <div class="map-pins">
+                            <div class="map-pin" style="top: 20%; left: 30%;" data-city="Delhi" data-aqi="301"></div>
+                            <div class="map-pin" style="top: 40%; left: 60%;" data-city="Mumbai" data-aqi="156"></div>
+                            <div class="map-pin" style="top: 60%; left: 45%;" data-city="Bangalore" data-aqi="89"></div>
+                            <div class="map-pin" style="top: 35%; left: 75%;" data-city="Kolkata" data-aqi="178"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+     Awareness Hub 
+    <section id="awareness" class="awareness-section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Awareness Hub</h2>
+                <p class="section-subtitle">Learn about air pollution and its impact on our lives</p>
+            </div>
+            <div class="awareness-grid">
+                <div class="awareness-card flip-card">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">
+                            <div class="card-icon">🫁</div>
+                            <h3>Health Impact</h3>
+                            <p>Click to learn more</p>
+                        </div>
+                        <div class="flip-card-back">
+                            <h3>Health Effects</h3>
+                            <ul>
+                                <li>Respiratory diseases</li>
+                                <li>Heart problems</li>
+                                <li>Reduced lung function</li>
+                                <li>Premature death</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="awareness-card flip-card">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">
+                            <div class="card-icon">🏭</div>
+                            <h3>Main Sources</h3>
+                            <p>Click to learn more</p>
+                        </div>
+                        <div class="flip-card-back">
+                            <h3>Pollution Sources</h3>
+                            <ul>
+                                <li>Vehicle emissions (40%)</li>
+                                <li>Industrial waste (25%)</li>
+                                <li>Construction dust (20%)</li>
+                                <li>Crop burning (15%)</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="awareness-card flip-card">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">
+                            <div class="card-icon">📊</div>
+                            <h3>Statistics</h3>
+                            <p>Click to learn more</p>
+                        </div>
+                        <div class="flip-card-back">
+                            <h3>Shocking Facts</h3>
+                            <ul>
+                                <li>1.2M deaths annually</li>
+                                <li>21 of 30 most polluted cities</li>
+                                <li>$95B economic loss</li>
+                                <li>3 years reduced lifespan</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="awareness-card flip-card">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">
+                            <div class="card-icon">🌱</div>
+                            <h3>Solutions</h3>
+                            <p>Click to learn more</p>
+                        </div>
+                        <div class="flip-card-back">
+                            <h3>What We Can Do</h3>
+                            <ul>
+                                <li>Use public transport</li>
+                                <li>Plant more trees</li>
+                                <li>Support clean energy</li>
+                                <li>Reduce, reuse, recycle</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="video-section">
+                <h3>Educational Videos</h3>
+                <div class="video-grid">
+                    <div class="video-card">
+                        <div class="video-thumbnail">
+                            <div class="play-button">▶️</div>
+                            <img src="/placeholder.svg?height=200&width=300" alt="Air Pollution Documentary">
+                        </div>
+                        <h4>Understanding Air Pollution</h4>
+                    </div>
+                    <div class="video-card">
+                        <div class="video-thumbnail">
+                            <div class="play-button">▶️</div>
+                            <img src="/placeholder.svg?height=200&width=300" alt="Clean Air Solutions">
+                        </div>
+                        <h4>Solutions for Clean Air</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+     Eco Score Calculator 
+    <section id="eco-calculator" class="eco-calculator">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Eco Score Calculator</h2>
+                <p class="section-subtitle">Discover your environmental impact and get personalized tips</p>
+            </div>
+            <div class="calculator-container">
+                <div class="calculator-form" id="calculator-form">
+                    <div class="question active" data-question="1">
+                        <h3>How do you usually commute?</h3>
+                        <div class="options">
+                            <button class="option-btn" data-value="10">🚗 Private Car</button>
+                            <button class="option-btn" data-value="5">🚌 Public Transport</button>
+                            <button class="option-btn" data-value="2">🚲 Bicycle</button>
+                            <button class="option-btn" data-value="1">🚶 Walking</button>
+                        </div>
+                    </div>
+                    <div class="question" data-question="2">
+                        <h3>How often do you use air conditioning?</h3>
+                        <div class="options">
+                            <button class="option-btn" data-value="8">❄️ Always (24/7)</button>
+                            <button class="option-btn" data-value="5">🌡️ Often (8+ hours)</button>
+                            <button class="option-btn" data-value="3">⏰ Sometimes (4-8 hours)</button>
+                            <button class="option-btn" data-value="1">🌿 Rarely/Never</button>
+                        </div>
+                    </div>
+                    <div class="question" data-question="3">
+                        <h3>Do you participate in eco-friendly activities?</h3>
+                        <div class="options">
+                            <button class="option-btn" data-value="1">🌱 Very Active</button>
+                            <button class="option-btn" data-value="3">♻️ Sometimes</button>
+                            <button class="option-btn" data-value="5">🤔 Rarely</button>
+                            <button class="option-btn" data-value="8">❌ Never</button>
+                        </div>
+                    </div>
+                    <div class="question" data-question="4">
+                        <h3>How much waste do you generate daily?</h3>
+                        <div class="options">
+                            <button class="option-btn" data-value="8">🗑️ A lot (5+ bags)</button>
+                            <button class="option-btn" data-value="5">📦 Moderate (2-4 bags)</button>
+                            <button class="option-btn" data-value="3">🛍️ Little (1 bag)</button>
+                            <button class="option-btn" data-value="1">♻️ Minimal (conscious effort)</button>
+                        </div>
+                    </div>
+                    <div class="question" data-question="5">
+                        <h3>How aware are you about air quality?</h3>
+                        <div class="options">
+                            <button class="option-btn" data-value="1">📱 Check daily</button>
+                            <button class="option-btn" data-value="3">📅 Check weekly</button>
+                            <button class="option-btn" data-value="5">🤷 Sometimes</button>
+                            <button class="option-btn" data-value="8">❓ Never check</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="calculator-result" id="calculator-result" style="display: none;">
+                    <div class="score-display">
+                        <div class="score-circle">
+                            <span class="score-number" id="eco-score">0</span>
+                            <span class="score-label">Eco Score</span>
+                        </div>
+                    </div>
+                    <div class="score-feedback" id="score-feedback"></div>
+                    <div class="improvement-tips" id="improvement-tips"></div>
+                    <button class="btn btn-secondary" onclick="resetCalculator()">Take Again</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+     Community Wall 
+    <section id="community" class="community-section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Community Wall</h2>
+                <p class="section-subtitle">See what others are reporting in your area</p>
+            </div>
+            <div class="community-grid" id="community-grid">
+                 Community reports will be populated by JavaScript 
+            </div>
+        </div>
+    </section>
+
+     Quiz Section 
+    <section id="quiz" class="quiz-section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Air Quality Quiz</h2>
+                <p class="section-subtitle">Test your knowledge about air pollution</p>
+            </div>
+            <div class="quiz-container">
+                <div class="quiz-start" id="quiz-start">
+                    <div class="quiz-intro">
+                        <h3>How much do you know about air pollution?</h3>
+                        <p>Take this quick 5-question quiz to test your knowledge and earn a badge!</p>
+                        <button class="btn btn-primary" onclick="startQuiz()">Start Quiz</button>
+                    </div>
+                </div>
+                <div class="quiz-game" id="quiz-game" style="display: none;">
+                    <div class="quiz-progress">
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="quiz-progress"></div>
+                        </div>
+                        <span class="question-counter" id="question-counter">1/5</span>
+                    </div>
+                    <div class="quiz-question" id="quiz-question">
+                         Questions will be populated by JavaScript 
+                    </div>
+                </div>
+                <div class="quiz-result" id="quiz-result" style="display: none;">
+                    <div class="result-badge" id="result-badge"></div>
+                    <div class="result-score" id="result-score"></div>
+                    <div class="result-message" id="result-message"></div>
+                    <button class="btn btn-primary" onclick="resetQuiz()">Take Again</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+     Take Action 
+    <section id="action" class="action-section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Take Action</h2>
+                <p class="section-subtitle">Small steps, big impact. Here's how you can help</p>
+            </div>
+            <div class="action-grid">
+                <div class="action-card">
+                    <div class="action-icon">🌳</div>
+                    <h3>Plant Trees</h3>
+                    <p>Join tree plantation drives in your city</p>
+                    <div class="action-details" style="display: none;">
+                        <ul>
+                            <li>Find local NGOs organizing drives</li>
+                            <li>Plant native species</li>
+                            <li>Adopt a tree in your neighborhood</li>
+                            <li>Create awareness about deforestation</li>
+                        </ul>
+                        <button class="btn btn-small">Find Drives Near Me</button>
+                    </div>
+                    <button class="expand-btn" onclick="toggleActionDetails(this)">Learn More</button>
+                </div>
+                <div class="action-card">
+                    <div class="action-icon">🚌</div>
+                    <h3>Use Public Transport</h3>
+                    <p>Reduce vehicle emissions by sharing rides</p>
+                    <div class="action-details" style="display: none;">
+                        <ul>
+                            <li>Use metro, buses, and trains</li>
+                            <li>Carpool with colleagues</li>
+                            <li>Try cycling for short distances</li>
+                            <li>Work from home when possible</li>
+                        </ul>
+                        <button class="btn btn-small">Find Routes</button>
+                    </div>
+                    <button class="expand-btn" onclick="toggleActionDetails(this)">Learn More</button>
+                </div>
+                <div class="action-card">
+                    <div class="action-icon">⚡</div>
+                    <h3>Save Energy</h3>
+                    <p>Reduce power consumption at home and work</p>
+                    <div class="action-details" style="display: none;">
+                        <ul>
+                            <li>Switch to LED bulbs</li>
+                            <li>Use energy-efficient appliances</li>
+                            <li>Unplug devices when not in use</li>
+                            <li>Install solar panels if possible</li>
+                        </ul>
+                        <button class="btn btn-small">Energy Tips</button>
+                    </div>
+                    <button class="expand-btn" onclick="toggleActionDetails(this)">Learn More</button>
+                </div>
+                <div class="action-card">
+                    <div class="action-icon">♻️</div>
+                    <h3>Reduce Waste</h3>
+                    <p>Practice the 3 R's: Reduce, Reuse, Recycle</p>
+                    <div class="action-details" style="display: none;">
+                        <ul>
+                            <li>Avoid single-use plastics</li>
+                            <li>Compost organic waste</li>
+                            <li>Donate items instead of throwing</li>
+                            <li>Buy products with minimal packaging</li>
+                        </ul>
+                        <button class="btn btn-small">Recycling Centers</button>
+                    </div>
+                    <button class="expand-btn" onclick="toggleActionDetails(this)">Learn More</button>
+                </div>
+                <div class="action-card">
+                    <div class="action-icon">📢</div>
+                    <h3>Spread Awareness</h3>
+                    <p>Educate others about air pollution</p>
+                    <div class="action-details" style="display: none;">
+                        <ul>
+                            <li>Share this website with friends</li>
+                            <li>Organize community meetings</li>
+                            <li>Use social media responsibly</li>
+                            <li>Support environmental policies</li>
+                        </ul>
+                        <button class="btn btn-small">Share Now</button>
+                    </div>
+                    <button class="expand-btn" onclick="toggleActionDetails(this)">Learn More</button>
+                </div>
+                <div class="action-card">
+                    <div class="action-icon">🏛️</div>
+                    <h3>Support Policies</h3>
+                    <p>Vote for leaders who prioritize environment</p>
+                    <div class="action-details" style="display: none;">
+                        <ul>
+                            <li>Research candidates' environmental stance</li>
+                            <li>Participate in public consultations</li>
+                            <li>Join environmental advocacy groups</li>
+                            <li>Write to your local representatives</li>
+                        </ul>
+                        <button class="btn btn-small">Find Representatives</button>
+                    </div>
+                    <button class="expand-btn" onclick="toggleActionDetails(this)">Learn More</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+     About Section 
+    <section id="about" class="about-section">
+        <div class="container">
+            <div class="about-content">
+                <div class="about-text">
+                    <h2>About BreatheBetter India</h2>
+                    <p>BreatheBetter India is a citizen-driven initiative to combat air pollution through awareness, action, and community engagement. We believe that every individual has the power to make a difference in creating cleaner air for future generations.</p>
+                    <p>Our mission is to educate, empower, and unite Indians in the fight against air pollution. Through technology, community action, and policy advocacy, we're working towards a future where every breath is clean and safe.</p>
+                    <div class="about-stats">
+                        <div class="stat">
+                            <span class="stat-number">50,000+</span>
+                            <span class="stat-label">Active Users</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-number">1,200+</span>
+                            <span class="stat-label">Reports Filed</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-number">25</span>
+                            <span class="stat-label">Cities Covered</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="about-visual">
+                    <div class="earth-animation">
+                        <div class="earth"></div>
+                        <div class="atmosphere"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+     Footer 
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>BreatheBetter India</h3>
+                    <p>Clean air for all, action by everyone.</p>
+                    <div class="social-links">
+                        <a href="#" class="social-link">📘</a>
+                        <a href="#" class="social-link">🐦</a>
+                        <a href="#" class="social-link">📷</a>
+                        <a href="#" class="social-link">💼</a>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="#aqi-dashboard">AQI Dashboard</a></li>
+                        <li><a href="#report">Report Pollution</a></li>
+                        <li><a href="#awareness">Learn More</a></li>
+                        <li><a href="#action">Take Action</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Resources</h4>
+                    <ul>
+                        <li><a href="#">Air Quality Guidelines</a></li>
+                        <li><a href="#">Health Advisory</a></li>
+                        <li><a href="#">Research Papers</a></li>
+                        <li><a href="#">Government Policies</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Contact</h4>
+                    <p>📧 info@breathebetterindia.org</p>
+                    <p>📞 +91-11-2345-6789</p>
+                    <p>📍 New Delhi, India</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 BreatheBetter India. Made with ❤️ for a cleaner future.</p>
+                <p class="credits">Data sources: CPCB, WHO, IQAir | Educational purpose only</p>
+            </div>
+        </div>
+    </footer>
+
+     Floating Action Button 
+    <div class="fab" id="fab">
+        <div class="fab-icon">🚨</div>
+        <div class="fab-text">Emergency Report</div>
+    </div>
+
+     Success Modal 
+    <div class="modal" id="success-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Thank You! 🎉</h3>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>Your report has been submitted successfully. Together, we're making a difference!</p>
+                <div class="success-animation">
+                    <div class="checkmark">✓</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

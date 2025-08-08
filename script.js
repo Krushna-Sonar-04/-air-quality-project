@@ -1,0 +1,990 @@
+// Global Variables
+let currentQuizQuestion = 0;
+let quizScore = 0;
+let quizAnswers = [];
+let calculatorScore = 0;
+let calculatorAnswers = [];
+let currentCalculatorQuestion = 1;
+
+// Mock Data
+const aqiData = [
+  { city: 'Delhi', aqi: 301, status: 'Hazardous', pm25: 180, pm10: 220, no2: 45, so2: 15, co: 2.1, o3: 85 },
+  { city: 'Mumbai', aqi: 156, status: 'Unhealthy', pm25: 89, pm10: 120, no2: 38, so2: 12, co: 1.8, o3: 72 },
+  { city: 'Bangalore', aqi: 89, status: 'Moderate', pm25: 45, pm10: 65, no2: 25, so2: 8, co: 1.2, o3: 58 },
+  { city: 'Chennai', aqi: 134, status: 'Unhealthy for Sensitive', pm25: 72, pm10: 95, no2: 32, so2: 10, co: 1.5, o3: 65 },
+  { city: 'Kolkata', aqi: 178, status: 'Unhealthy', pm25: 98, pm10: 135, no2: 42, so2: 14, co: 1.9, o3: 78 },
+  { city: 'Hyderabad', aqi: 112, status: 'Unhealthy for Sensitive', pm25: 58, pm10: 78, no2: 28, so2: 9, co: 1.3, o3: 62 }
+];
+
+const communityReports = [
+  { name: 'Rajesh Kumar', location: 'Connaught Place, Delhi', type: 'Heavy Smog', time: '2 hours ago', avatar: 'RK' },
+  { name: 'Priya Sharma', location: 'Bandra, Mumbai', type: 'Vehicle Emissions', time: '4 hours ago', avatar: 'PS' },
+  { name: 'Amit Singh', location: 'Koramangala, Bangalore', type: 'Construction Dust', time: '6 hours ago', avatar: 'AS' },
+  { name: 'Sneha Patel', location: 'Anna Nagar, Chennai', type: 'Industrial Emissions', time: '8 hours ago', avatar: 'SP' },
+  { name: 'Vikram Gupta', location: 'Salt Lake, Kolkata', type: 'Air Pollution', time: '12 hours ago', avatar: 'VG' },
+  { name: 'Meera Reddy', location: 'Jubilee Hills, Hyderabad', type: 'Dust Storm', time: '1 day ago', avatar: 'MR' }
+];
+
+const quizQuestions = [
+  {
+    question: "What does AQI stand for?",
+    options: [
+      "Air Quality Index",
+      "Atmospheric Quality Indicator",
+      "Air Quantity Index",
+      "Atmospheric Quantity Indicator"
+    ],
+    correct: 0
+  },
+  {
+    question: "Which AQI range is considered 'Good' for air quality?",
+    options: [
+      "0-50",
+      "51-100",
+      "101-150",
+      "151-200"
+    ],
+    correct: 0
+  },
+  {
+    question: "What is the primary cause of air pollution in Indian cities?",
+    options: [
+      "Natural disasters",
+      "Vehicle emissions",
+      "Ocean currents",
+      "Solar radiation"
+    ],
+    correct: 1
+  },
+  {
+    question: "Which gas is NOT typically measured in air quality monitoring?",
+    options: [
+      "Carbon Monoxide (CO)",
+      "Nitrogen Dioxide (NO2)",
+      "Helium (He)",
+      "Ozone (O3)"
+    ],
+    correct: 2
+  },
+  {
+    question: "How many people die prematurely each year in India due to air pollution?",
+    options: [
+      "100,000",
+      "500,000",
+      "1.2 million",
+      "2.5 million"
+    ],
+    correct: 2
+  }
+];
+
+// DOM Content Loaded
+document.addEventListener('DOMContentLoaded', function() {
+  initializeApp();
+});
+
+// Initialize Application
+function initializeApp() {
+  setupEventListeners();
+  loadAQIData();
+  loadCommunityReports();
+  animateCounters();
+  setupThemeToggle();
+  setupNavigation();
+  setupScrollEffects();
+}
+
+// Event Listeners
+function setupEventListeners() {
+  // Navigation toggle
+  const navToggle = document.getElementById('nav-toggle');
+  const navMenu = document.getElementById('nav-menu');
+  
+  if (navToggle && navMenu) {
+    navToggle.addEventListener('click', () => {
+      navMenu.classList.toggle('active');
+      navToggle.classList.toggle('active');
+    });
+  }
+
+  // Report form submission
+  const reportForm = document.getElementById('report-form');
+  if (reportForm) {
+    reportForm.addEventListener('submit', handleReportSubmission);
+  }
+
+  // File upload preview
+  const photoInput = document.getElementById('photo');
+  if (photoInput) {
+    photoInput.addEventListener('change', handleFileUpload);
+  }
+
+  // Calculator options
+  setupCalculatorEventListeners();
+
+  // FAB click
+  const fab = document.getElementById('fab');
+  if (fab) {
+    fab.addEventListener('click', () => {
+      scrollToSection('report');
+    });
+  }
+
+  // Map pins
+  setupMapPins();
+}
+
+// Theme Toggle
+function setupThemeToggle() {
+  const themeToggle = document.getElementById('theme-toggle');
+  const themeIcon = themeToggle.querySelector('.theme-icon');
+  
+  // Check for saved theme preference
+  const savedTheme = localStorage.getItem('theme') || 'light';
+  document.documentElement.setAttribute('data-theme', savedTheme);
+  updateThemeIcon(savedTheme, themeIcon);
+  
+  themeToggle.addEventListener('click', () => {
+    const currentTheme = document.documentElement.getAttribute('data-theme');
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    
+    document.documentElement.setAttribute('data-theme', newTheme);
+    localStorage.setItem('theme', newTheme);
+    updateThemeIcon(newTheme, themeIcon);
+  });
+}
+
+function updateThemeIcon(theme, iconElement) {
+  iconElement.textContent = theme === 'dark' ? '☀️' : '🌙';
+}
+
+// Navigation
+function setupNavigation() {
+  const navbar = document.getElementById('navbar');
+  const navLinks = document.querySelectorAll('.nav-link');
+  
+  // Navbar scroll effect
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 100) {
+      navbar.style.background = 'rgba(255, 255, 255, 0.98)';
+      if (document.documentElement.getAttribute('data-theme') === 'dark') {
+        navbar.style.background = 'rgba(26, 26, 26, 0.98)';
+      }
+    } else {
+      navbar.style.background = 'rgba(255, 255, 255, 0.95)';
+      if (document.documentElement.getAttribute('data-theme') === 'dark') {
+        navbar.style.background = 'rgba(26, 26, 26, 0.95)';
+      }
+    }
+  });
+  
+  // Smooth scrolling for nav links
+  navLinks.forEach(link => {
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      const targetId = link.getAttribute('href').substring(1);
+      scrollToSection(targetId);
+      
+      // Close mobile menu
+      const navMenu = document.getElementById('nav-menu');
+      const navToggle = document.getElementById('nav-toggle');
+      navMenu.classList.remove('active');
+      navToggle.classList.remove('active');
+    });
+  });
+}
+
+// Scroll Effects
+function setupScrollEffects() {
+  const observerOptions = {
+    threshold: 0.1,
+    rootMargin: '0px 0px -50px 0px'
+  };
+  
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.style.opacity = '1';
+        entry.target.style.transform = 'translateY(0)';
+      }
+    });
+  }, observerOptions);
+  
+  // Observe all sections
+  const sections = document.querySelectorAll('section');
+  sections.forEach(section => {
+    section.style.opacity = '0';
+    section.style.transform = 'translateY(30px)';
+    section.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+    observer.observe(section);
+  });
+}
+
+// Utility Functions
+function scrollToSection(sectionId) {
+  const section = document.getElementById(sectionId);
+  if (section) {
+    const offsetTop = section.offsetTop - 80;
+    window.scrollTo({
+      top: offsetTop,
+      behavior: 'smooth'
+    });
+  }
+}
+
+// Counter Animation
+function animateCounters() {
+  const counters = document.querySelectorAll('.stat-number');
+  
+  const animateCounter = (counter) => {
+    const target = parseInt(counter.getAttribute('data-target'));
+    const increment = target / 100;
+    let current = 0;
+    
+    const updateCounter = () => {
+      if (current < target) {
+        current += increment;
+        counter.textContent = Math.floor(current).toLocaleString();
+        requestAnimationFrame(updateCounter);
+      } else {
+        counter.textContent = target.toLocaleString();
+      }
+    };
+    
+    updateCounter();
+  };
+  
+  // Intersection Observer for counters
+  const counterObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        animateCounter(entry.target);
+        counterObserver.unobserve(entry.target);
+      }
+    });
+  });
+  
+  counters.forEach(counter => {
+    counterObserver.observe(counter);
+  });
+}
+
+// AQI Data Loading
+function loadAQIData() {
+  const aqiGrid = document.getElementById('aqi-grid');
+  if (!aqiGrid) return;
+  
+  aqiGrid.innerHTML = '';
+  
+  aqiData.forEach((data, index) => {
+    const aqiCard = createAQICard(data);
+    aqiCard.style.animationDelay = `${index * 0.1}s`;
+    aqiGrid.appendChild(aqiCard);
+  });
+}
+
+function createAQICard(data) {
+  const card = document.createElement('div');
+  card.className = `aqi-card ${getAQIClass(data.aqi)}`;
+  
+  card.innerHTML = `
+    <div class="aqi-header">
+      <h3 class="city-name">${data.city}</h3>
+      <span class="aqi-value" style="color: ${getAQIColor(data.aqi)}">${data.aqi}</span>
+    </div>
+    <p class="aqi-status">${data.status}</p>
+    <div class="aqi-details">
+      <div class="detail-item">
+        <span>PM2.5:</span>
+        <span>${data.pm25} μg/m³</span>
+      </div>
+      <div class="detail-item">
+        <span>PM10:</span>
+        <span>${data.pm10} μg/m³</span>
+      </div>
+      <div class="detail-item">
+        <span>NO2:</span>
+        <span>${data.no2} ppb</span>
+      </div>
+      <div class="detail-item">
+        <span>SO2:</span>
+        <span>${data.so2} ppb</span>
+      </div>
+    </div>
+  `;
+  
+  return card;
+}
+
+function getAQIClass(aqi) {
+  if (aqi <= 50) return 'good';
+  if (aqi <= 100) return 'moderate';
+  if (aqi <= 150) return 'unhealthy-sensitive';
+  if (aqi <= 200) return 'unhealthy';
+  if (aqi <= 300) return 'very-unhealthy';
+  return 'hazardous';
+}
+
+function getAQIColor(aqi) {
+  if (aqi <= 50) return '#00E400';
+  if (aqi <= 100) return '#FFFF00';
+  if (aqi <= 150) return '#FF7E00';
+  if (aqi <= 200) return '#FF0000';
+  if (aqi <= 300) return '#8F3F97';
+  return '#7E0023';
+}
+
+// Community Reports
+function loadCommunityReports() {
+  const communityGrid = document.getElementById('community-grid');
+  if (!communityGrid) return;
+  
+  communityGrid.innerHTML = '';
+  
+  communityReports.forEach((report, index) => {
+    const reportCard = createCommunityCard(report);
+    reportCard.style.animationDelay = `${index * 0.1}s`;
+    communityGrid.appendChild(reportCard);
+  });
+}
+
+function createCommunityCard(report) {
+  const card = document.createElement('div');
+  card.className = 'community-card';
+  
+  card.innerHTML = `
+    <div class="community-header">
+      <div class="user-avatar">${report.avatar}</div>
+      <div class="user-info">
+        <h4>${report.name}</h4>
+        <p>${report.location}</p>
+      </div>
+    </div>
+    <div class="report-content">
+      <span class="pollution-type">${report.type}</span>
+      <p>Reported pollution in the area. Immediate attention needed for public health.</p>
+    </div>
+    <div class="report-time">${report.time}</div>
+  `;
+  
+  return card;
+}
+
+// Report Form Handling
+function handleReportSubmission(e) {
+  e.preventDefault();
+  
+  const formData = new FormData(e.target);
+  const reportData = {
+    type: formData.get('pollution-type') || document.getElementById('pollution-type').value,
+    location: formData.get('location') || document.getElementById('location').value,
+    severity: formData.get('severity') || document.getElementById('severity').value,
+    description: formData.get('description') || document.getElementById('description').value
+  };
+  
+  // Simulate form submission
+  setTimeout(() => {
+    showSuccessModal();
+    e.target.reset();
+  }, 1000);
+}
+
+function handleFileUpload(e) {
+  const file = e.target.files[0];
+  const uploadDisplay = document.querySelector('.file-upload-display');
+  
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      uploadDisplay.innerHTML = `
+        <img src="${e.target.result}" alt="Uploaded photo" style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px;">
+        <span>Photo uploaded successfully</span>
+      `;
+    };
+    reader.readAsDataURL(file);
+  }
+}
+
+// Map Pins
+function setupMapPins() {
+  const mapPins = document.querySelectorAll('.map-pin');
+  
+  mapPins.forEach(pin => {
+    pin.addEventListener('click', () => {
+      const city = pin.getAttribute('data-city');
+      const aqi = pin.getAttribute('data-aqi');
+      
+      // Create tooltip
+      const tooltip = document.createElement('div');
+      tooltip.className = 'map-tooltip';
+      tooltip.innerHTML = `
+        <strong>${city}</strong><br>
+        AQI: ${aqi}
+      `;
+      tooltip.style.cssText = `
+        position: absolute;
+        background: var(--bg-primary);
+        padding: 0.5rem;
+        border-radius: 5px;
+        box-shadow: var(--shadow-medium);
+        font-size: 0.8rem;
+        z-index: 1000;
+        pointer-events: none;
+        transform: translate(-50%, -100%);
+        margin-top: -10px;
+      `;
+      
+      pin.appendChild(tooltip);
+      
+      setTimeout(() => {
+        if (tooltip.parentNode) {
+          tooltip.parentNode.removeChild(tooltip);
+        }
+      }, 3000);
+    });
+  });
+}
+
+// Calculator Functions
+function setupCalculatorEventListeners() {
+  const optionButtons = document.querySelectorAll('.option-btn');
+  
+  optionButtons.forEach(button => {
+    button.addEventListener('click', (e) => {
+      const question = e.target.closest('.question');
+      const questionNumber = parseInt(question.getAttribute('data-question'));
+      const value = parseInt(e.target.getAttribute('data-value'));
+      
+      // Remove previous selection
+      question.querySelectorAll('.option-btn').forEach(btn => {
+        btn.classList.remove('selected');
+      });
+      
+      // Add selection to clicked button
+      e.target.classList.add('selected');
+      
+      // Store answer
+      calculatorAnswers[questionNumber - 1] = value;
+      
+      // Move to next question after delay
+      setTimeout(() => {
+        nextCalculatorQuestion();
+      }, 500);
+    });
+  });
+}
+
+function nextCalculatorQuestion() {
+  const currentQuestion = document.querySelector('.question.active');
+  const nextQuestion = document.querySelector(`[data-question="${currentCalculatorQuestion + 1}"]`);
+  
+  if (nextQuestion) {
+    currentQuestion.classList.remove('active');
+    nextQuestion.classList.add('active');
+    currentCalculatorQuestion++;
+  } else {
+    // Show results
+    calculateEcoScore();
+  }
+}
+
+function calculateEcoScore() {
+  const totalScore = calculatorAnswers.reduce((sum, score) => sum + score, 0);
+  const maxScore = 40; // 5 questions × 8 max points
+  const percentage = Math.round(((maxScore - totalScore) / maxScore) * 100);
+  
+  calculatorScore = percentage;
+  
+  document.getElementById('calculator-form').style.display = 'none';
+  document.getElementById('calculator-result').style.display = 'block';
+  
+  // Animate score
+  animateScore(percentage);
+  showScoreFeedback(percentage);
+  showImprovementTips(percentage);
+}
+
+function animateScore(targetScore) {
+  const scoreElement = document.getElementById('eco-score');
+  let currentScore = 0;
+  const increment = targetScore / 50;
+  
+  const updateScore = () => {
+    if (currentScore < targetScore) {
+      currentScore += increment;
+      scoreElement.textContent = Math.floor(currentScore);
+      requestAnimationFrame(updateScore);
+    } else {
+      scoreElement.textContent = targetScore;
+    }
+  };
+  
+  updateScore();
+}
+
+function showScoreFeedback(score) {
+  const feedbackElement = document.getElementById('score-feedback');
+  let feedback = '';
+  let color = '';
+  
+  if (score >= 80) {
+    feedback = '🌟 Excellent! You\'re an eco-warrior! Your lifestyle choices are making a positive impact on air quality.';
+    color = '#27AE60';
+  } else if (score >= 60) {
+    feedback = '👍 Good job! You\'re on the right track. A few more changes can make you an environmental champion.';
+    color = '#F39C12';
+  } else if (score >= 40) {
+    feedback = '⚠️ There\'s room for improvement. Small changes in your daily routine can significantly help reduce air pollution.';
+    color = '#E67E22';
+  } else {
+    feedback = '🚨 Time for action! Your current lifestyle may be contributing to air pollution. Let\'s work together to make positive changes.';
+    color = '#E74C3C';
+  }
+  
+  feedbackElement.innerHTML = `<p style="color: ${color}; font-weight: 600;">${feedback}</p>`;
+}
+
+function showImprovementTips(score) {
+  const tipsElement = document.getElementById('improvement-tips');
+  let tips = [];
+  
+  if (score < 80) {
+    tips = [
+      'Use public transportation or carpool more often',
+      'Reduce air conditioning usage and opt for natural ventilation',
+      'Participate in tree plantation drives',
+      'Choose eco-friendly products and reduce waste',
+      'Stay informed about air quality in your area'
+    ];
+  } else {
+    tips = [
+      'Continue your excellent eco-friendly practices',
+      'Inspire others to adopt sustainable lifestyles',
+      'Support environmental policies and initiatives',
+      'Consider renewable energy options for your home',
+      'Volunteer for environmental organizations'
+    ];
+  }
+  
+  const tipsHTML = tips.map(tip => `<li>${tip}</li>`).join('');
+  tipsElement.innerHTML = `
+    <h4>Personalized Tips for You:</h4>
+    <ul>${tipsHTML}</ul>
+  `;
+}
+
+function resetCalculator() {
+  calculatorAnswers = [];
+  currentCalculatorQuestion = 1;
+  
+  document.getElementById('calculator-result').style.display = 'none';
+  document.getElementById('calculator-form').style.display = 'block';
+  
+  // Reset to first question
+  document.querySelectorAll('.question').forEach(q => q.classList.remove('active'));
+  document.querySelector('[data-question="1"]').classList.add('active');
+  
+  // Clear selections
+  document.querySelectorAll('.option-btn').forEach(btn => btn.classList.remove('selected'));
+}
+
+// Quiz Functions
+function startQuiz() {
+  currentQuizQuestion = 0;
+  quizScore = 0;
+  quizAnswers = [];
+  
+  document.getElementById('quiz-start').style.display = 'none';
+  document.getElementById('quiz-game').style.display = 'block';
+  
+  showQuizQuestion();
+}
+
+function showQuizQuestion() {
+  const question = quizQuestions[currentQuizQuestion];
+  const questionElement = document.getElementById('quiz-question');
+  const progressElement = document.getElementById('quiz-progress');
+  const counterElement = document.getElementById('question-counter');
+  
+  // Update progress
+  const progress = ((currentQuizQuestion + 1) / quizQuestions.length) * 100;
+  progressElement.style.width = `${progress}%`;
+  counterElement.textContent = `${currentQuizQuestion + 1}/${quizQuestions.length}`;
+  
+  // Show question
+  questionElement.innerHTML = `
+    <h3>${question.question}</h3>
+    <div class="quiz-options">
+      ${question.options.map((option, index) => `
+        <button class="quiz-option" onclick="selectQuizAnswer(${index})">${option}</button>
+      `).join('')}
+    </div>
+  `;
+}
+
+function selectQuizAnswer(selectedIndex) {
+  const question = quizQuestions[currentQuizQuestion];
+  const options = document.querySelectorAll('.quiz-option');
+  
+  // Disable all options
+  options.forEach(option => option.style.pointerEvents = 'none');
+  
+  // Show correct/incorrect
+  options[selectedIndex].classList.add(selectedIndex === question.correct ? 'correct' : 'incorrect');
+  if (selectedIndex !== question.correct) {
+    options[question.correct].classList.add('correct');
+  }
+  
+  // Store answer
+  quizAnswers.push(selectedIndex);
+  if (selectedIndex === question.correct) {
+    quizScore++;
+  }
+  
+  // Move to next question
+  setTimeout(() => {
+    currentQuizQuestion++;
+    if (currentQuizQuestion < quizQuestions.length) {
+      showQuizQuestion();
+    } else {
+      showQuizResult();
+    }
+  }, 2000);
+}
+
+function showQuizResult() {
+  document.getElementById('quiz-game').style.display = 'none';
+  document.getElementById('quiz-result').style.display = 'block';
+  
+  const percentage = Math.round((quizScore / quizQuestions.length) * 100);
+  const badge = getBadge(percentage);
+  const message = getResultMessage(percentage);
+  
+  document.getElementById('result-badge').innerHTML = badge.icon;
+  document.getElementById('result-badge').style.background = badge.color;
+  document.getElementById('result-score').textContent = `${quizScore}/${quizQuestions.length} (${percentage}%)`;
+  document.getElementById('result-message').innerHTML = message;
+  
+  // Save to localStorage
+  localStorage.setItem('quizBestScore', Math.max(percentage, localStorage.getItem('quizBestScore') || 0));
+}
+
+function getBadge(percentage) {
+  if (percentage >= 80) {
+    return { icon: '🏆', color: '#FFD700' };
+  } else if (percentage >= 60) {
+    return { icon: '🥈', color: '#C0C0C0' };
+  } else if (percentage >= 40) {
+    return { icon: '🥉', color: '#CD7F32' };
+  } else {
+    return { icon: '📚', color: '#3498DB' };
+  }
+}
+
+function getResultMessage(percentage) {
+  if (percentage >= 80) {
+    return '<h3>🌟 Air Quality Expert!</h3><p>Outstanding! You have excellent knowledge about air pollution. Share your knowledge with others!</p>';
+  } else if (percentage >= 60) {
+    return '<h3>🎯 Well Informed!</h3><p>Great job! You have good understanding of air quality issues. Keep learning!</p>';
+  } else if (percentage >= 40) {
+    return '<h3>📖 Learning Progress!</h3><p>You\'re on the right track! Review the awareness section to improve your knowledge.</p>';
+  } else {
+    return '<h3>🌱 Just Getting Started!</h3><p>Don\'t worry! Everyone starts somewhere. Explore our awareness hub to learn more.</p>';
+  }
+}
+
+function resetQuiz() {
+  document.getElementById('quiz-result').style.display = 'none';
+  document.getElementById('quiz-start').style.display = 'block';
+}
+
+// Action Section Functions
+function toggleActionDetails(button) {
+  const card = button.closest('.action-card');
+  const details = card.querySelector('.action-details');
+  
+  if (details.style.display === 'none' || !details.style.display) {
+    details.style.display = 'block';
+    button.textContent = 'Show Less';
+  } else {
+    details.style.display = 'none';
+    button.textContent = 'Learn More';
+  }
+}
+
+// Modal Functions
+function showSuccessModal() {
+  const modal = document.getElementById('success-modal');
+  modal.classList.add('show');
+}
+
+function closeModal() {
+  const modal = document.getElementById('success-modal');
+  modal.classList.remove('show');
+}
+
+// Close modal when clicking outside
+window.addEventListener('click', (e) => {
+  const modal = document.getElementById('success-modal');
+  if (e.target === modal) {
+    closeModal();
+  }
+});
+
+// Keyboard Navigation
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    closeModal();
+    
+    // Close mobile menu
+    const navMenu = document.getElementById('nav-menu');
+    const navToggle = document.getElementById('nav-toggle');
+    if (navMenu.classList.contains('active')) {
+      navMenu.classList.remove('active');
+      navToggle.classList.remove('active');
+    }
+  }
+});
+
+// Performance Optimization
+// Debounce scroll events
+function debounce(func, wait) {
+  let timeout;
+  return function executedFunction(...args) {
+    const later = () => {
+      clearTimeout(timeout);
+      func(...args);
+    };
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+  };
+}
+
+// Lazy loading for images
+function setupLazyLoading() {
+  const images = document.querySelectorAll('img[data-src]');
+  
+  const imageObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const img = entry.target;
+        img.src = img.dataset.src;
+        img.classList.remove('lazy');
+        imageObserver.unobserve(img);
+      }
+    });
+  });
+  
+  images.forEach(img => imageObserver.observe(img));
+}
+
+// Initialize lazy loading when DOM is ready
+document.addEventListener('DOMContentLoaded', setupLazyLoading);
+
+// Service Worker Registration (for offline functionality)
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js')
+      .then(registration => {
+        console.log('SW registered: ', registration);
+      })
+      .catch(registrationError => {
+        console.log('SW registration failed: ', registrationError);
+      });
+  });
+}
+
+// Analytics and Error Tracking
+window.addEventListener('error', (e) => {
+  console.error('JavaScript Error:', e.error);
+  // In production, you would send this to an analytics service
+});
+
+// Performance monitoring
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    const perfData = performance.getEntriesByType('navigation')[0];
+    console.log('Page Load Time:', perfData.loadEventEnd - perfData.loadEventStart);
+  }, 0);
+});
+
+// Accessibility improvements
+function setupAccessibility() {
+  // Skip to main content link
+  const skipLink = document.createElement('a');
+  skipLink.href = '#main-content';
+  skipLink.textContent = 'Skip to main content';
+  skipLink.className = 'sr-only';
+  skipLink.style.cssText = `
+    position: absolute;
+    top: -40px;
+    left: 6px;
+    background: var(--primary-color);
+    color: white;
+    padding: 8px;
+    text-decoration: none;
+    border-radius: 4px;
+    z-index: 1000;
+  `;
+  
+  skipLink.addEventListener('focus', () => {
+    skipLink.style.top = '6px';
+  });
+  
+  skipLink.addEventListener('blur', () => {
+    skipLink.style.top = '-40px';
+  });
+  
+  document.body.insertBefore(skipLink, document.body.firstChild);
+  
+  // Add main content landmark
+  const heroSection = document.getElementById('hero');
+  if (heroSection) {
+    heroSection.setAttribute('id', 'main-content');
+    heroSection.setAttribute('tabindex', '-1');
+  }
+}
+
+// Initialize accessibility features
+document.addEventListener('DOMContentLoaded', setupAccessibility);
+
+// Export functions for testing (if needed)
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = {
+    getAQIClass,
+    getAQIColor,
+    calculateEcoScore,
+    getBadge,
+    getResultMessage
+  };
+}
+
+
+/* --- AUTO-APPENDED BY CHATGPT: interactive enhancements --- */
+
+
+/* =========================
+   ADDED: Interactive Enhancements & Animations
+   ========================= */
+
+// Make AQI cards flippable: wrap inner content and add click handler
+function enhanceAQICards() {
+  const cards = document.querySelectorAll('.aqi-card');
+  cards.forEach(card => {
+    // wrap inner content if not already wrapped
+    if (!card.querySelector('.aqi-inner')) {
+      const inner = document.createElement('div');
+      inner.className = 'aqi-inner';
+      inner.innerHTML = card.innerHTML;
+      card.innerHTML = '';
+      card.appendChild(inner);
+
+      // create back side with extra details
+      const back = document.createElement('div');
+      back.className = 'back';
+      back.innerHTML = `
+        <h4 style="margin-top:0;">Details</h4>
+        <p style="font-size:0.9rem; color:var(--text-secondary);">Click again to close. More sensor details & health advice can go here.</p>
+      `;
+      card.appendChild(back);
+      card.classList.add('flippable');
+
+      // click to flip
+      card.addEventListener('click', (e) => {
+        // prevent flipping when clicking interactive elements like buttons/links
+        const tag = e.target.tagName.toLowerCase();
+        if (['button','a','input','select','textarea'].includes(tag)) return;
+        card.classList.toggle('flipped');
+      });
+    }
+  });
+}
+
+// File upload dragover effects
+function enhanceFileUpload() {
+  const fileUpload = document.querySelector('.file-upload');
+  const display = document.querySelector('.file-upload-display');
+  if (!fileUpload || !display) return;
+
+  ['dragenter','dragover'].forEach(evt => {
+    fileUpload.addEventListener(evt, (e) => {
+      e.preventDefault();
+      display.classList.add('dragover');
+    });
+  });
+  ['dragleave','drop','mouseup'].forEach(evt => {
+    fileUpload.addEventListener(evt, (e) => {
+      display.classList.remove('dragover');
+    });
+  });
+}
+
+// Severity slider color update (live)
+function bindSeveritySlider() {
+  const slider = document.getElementById('severity');
+  if (!slider) return;
+
+  const update = () => {
+    const val = (slider.value - slider.min) / (slider.max - slider.min) * 100;
+    slider.style.background = `linear-gradient(90deg, var(--aqi-very-unhealthy) ${val}%, var(--border-color) ${val}%)`;
+  };
+  slider.addEventListener('input', update);
+  update();
+}
+
+// Lazy-load images (simple)
+function lazyLoadImages() {
+  const images = document.querySelectorAll('img[data-src]');
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const img = entry.target;
+        img.src = img.dataset.src;
+        img.removeAttribute('data-src');
+        io.unobserve(img);
+      }
+    });
+  }, {rootMargin: '200px'});
+  images.forEach(img => io.observe(img));
+}
+
+// Quiz visual feedback enhancements (mark correct/incorrect, subtle delay)
+function enhanceQuizFeedback() {
+  document.addEventListener('click', (e) => {
+    if (!e.target.classList) return;
+    if (e.target.classList.contains('quiz-option')) {
+      const option = e.target;
+      // prevent double clicks
+      if (option.classList.contains('selected')) return;
+      const container = option.closest('#quiz-question');
+      if (!container) return;
+      // mark selected visually
+      option.classList.add('selected');
+      // determine if correct from data-correct attribute (set below when rendering)
+      const isCorrect = option.dataset.correct === 'true';
+      if (isCorrect) {
+        option.classList.add('correct');
+      } else {
+        option.classList.add('incorrect');
+      }
+      // after short delay, move to next question (existing logic may already do this)
+      setTimeout(() => {
+        // remove classes so animation can repeat next time
+        option.classList.remove('selected','correct','incorrect');
+      }, 900);
+    }
+  });
+}
+
+// Run enhancements after DOM ready
+document.addEventListener('DOMContentLoaded', () => {
+  try {
+    enhanceAQICards();
+    enhanceFileUpload();
+    bindSeveritySlider();
+    lazyLoadImages();
+    enhanceQuizFeedback();
+  } catch (err) {
+    console.warn('Enhancement init error', err);
+  }
+});
